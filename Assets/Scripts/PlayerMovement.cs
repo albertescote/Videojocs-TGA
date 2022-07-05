@@ -11,20 +11,22 @@ public class PlayerMovement : MonoBehaviour
 
     Animator anim;
     public Transform graphicsTransform;
+    Cinemachine.CinemachineCollisionImpulseSource screenShaker;
 
     void Awake()
     {
-        jumpSpeed = 7.5f;
+        jumpSpeed = 10f;
         movementSpeed = 5f;
         movement = 0f;
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        screenShaker = GetComponent<Cinemachine.CinemachineCollisionImpulseSource>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -35,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
         //    timer -= Time.deltaTime;
         //}
 
-        
+
     }
 
     void FixedUpdate()
@@ -114,11 +116,23 @@ public class PlayerMovement : MonoBehaviour
         movement = ctx.ReadValue<float>();
     }
 
+    IEnumerator Wait()
+    {
+        yield return new WaitForSeconds(5);
+    }
+
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Ground")
         {
             onGround = true;
+        }
+        if (collision.gameObject.tag == "Death")
+        {
+            anim.SetBool("onDie", true);
+            screenShaker.GenerateImpulse();
+            StartCoroutine(Wait());
+            collision.otherCollider.transform.position = GameObject.Find("Respawn").transform.position;
         }
     }
 
@@ -127,6 +141,10 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.tag == "Ground")
         {
             onGround = false;
+        }
+        if (collision.gameObject.tag == "Death")
+        {
+            anim.SetBool("onDie", false);
         }
     }
 }

@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - Death
   layers:
   - Default
   - TransparentFX
@@ -39,8 +40,17 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 1586976837
+    locked: 0
   - name: Player
     uniqueID: 2711540595
+    locked: 0
+  - name: Background2
+    uniqueID: 2931855541
+    locked: 0
+  - name: Ground
+    uniqueID: 1376817787
     locked: 0
   - name: Default
     uniqueID: 0
