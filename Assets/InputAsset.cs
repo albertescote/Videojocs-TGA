@@ -53,6 +53,15 @@ public partial class @InputAsset : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Esc"",
+                    ""type"": ""Button"",
+                    ""id"": ""c7120d16-9723-46f4-90e9-bd2cf17cb3ae"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -231,6 +240,17 @@ public partial class @InputAsset : IInputActionCollection2, IDisposable
                     ""action"": ""Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cf46d9f2-5614-4eee-a898-06542ca943d8"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Esc"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -259,6 +279,7 @@ public partial class @InputAsset : IInputActionCollection2, IDisposable
         m_Default_Jump = m_Default.FindAction("Jump", throwIfNotFound: true);
         m_Default_Movement = m_Default.FindAction("Movement", throwIfNotFound: true);
         m_Default_Down = m_Default.FindAction("Down", throwIfNotFound: true);
+        m_Default_Esc = m_Default.FindAction("Esc", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -321,6 +342,7 @@ public partial class @InputAsset : IInputActionCollection2, IDisposable
     private readonly InputAction m_Default_Jump;
     private readonly InputAction m_Default_Movement;
     private readonly InputAction m_Default_Down;
+    private readonly InputAction m_Default_Esc;
     public struct DefaultActions
     {
         private @InputAsset m_Wrapper;
@@ -328,6 +350,7 @@ public partial class @InputAsset : IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_Default_Jump;
         public InputAction @Movement => m_Wrapper.m_Default_Movement;
         public InputAction @Down => m_Wrapper.m_Default_Down;
+        public InputAction @Esc => m_Wrapper.m_Default_Esc;
         public InputActionMap Get() { return m_Wrapper.m_Default; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -346,6 +369,9 @@ public partial class @InputAsset : IInputActionCollection2, IDisposable
                 @Down.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDown;
                 @Down.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDown;
                 @Down.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDown;
+                @Esc.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnEsc;
+                @Esc.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnEsc;
+                @Esc.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnEsc;
             }
             m_Wrapper.m_DefaultActionsCallbackInterface = instance;
             if (instance != null)
@@ -359,6 +385,9 @@ public partial class @InputAsset : IInputActionCollection2, IDisposable
                 @Down.started += instance.OnDown;
                 @Down.performed += instance.OnDown;
                 @Down.canceled += instance.OnDown;
+                @Esc.started += instance.OnEsc;
+                @Esc.performed += instance.OnEsc;
+                @Esc.canceled += instance.OnEsc;
             }
         }
     }
@@ -377,5 +406,6 @@ public partial class @InputAsset : IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnMovement(InputAction.CallbackContext context);
         void OnDown(InputAction.CallbackContext context);
+        void OnEsc(InputAction.CallbackContext context);
     }
 }

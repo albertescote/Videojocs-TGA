@@ -2,25 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Cinemachine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
     Rigidbody2D rb;
-    public float jumpSpeed, movementSpeed, movement, timer;
-    bool jump, down, onGround;
+    public float jumpSpeed, movementSpeed, movement, damage;
+    bool jump, down, onGround, onLava, paused, dead;
+    string respawn;
 
     Animator anim;
+    public CinemachineImpulseSource source;
     public Transform graphicsTransform;
-    Cinemachine.CinemachineCollisionImpulseSource screenShaker;
+    public Slider slider;
 
     void Awake()
     {
-        jumpSpeed = 10f;
+        jumpSpeed = 12f;
         movementSpeed = 5f;
         movement = 0f;
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        screenShaker = GetComponent<Cinemachine.CinemachineCollisionImpulseSource>();
+        respawn = "Respawn";
+        damage = 1f;
+        onLava = false;
+        paused = false;
+        dead = false;
     }
 
     // Start is called before the first frame update
@@ -32,23 +41,17 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if(timer > 0)
-        //{
-        //    timer -= Time.deltaTime;
-        //}
-
 
     }
 
     void FixedUpdate()
     {
         rb.velocity = new Vector2(movement * movementSpeed, rb.velocity.y);
-
+        
         if (jump)
         {
             down = false;
             jump = false;
-            //timer = 1.5f;
             rb.velocity += Vector2.up * jumpSpeed;
         }
 
@@ -86,11 +89,42 @@ public class PlayerMovement : MonoBehaviour
         {
             anim.SetBool("onDown", false);
         }
+
+        if (onLava)
+        {
+            if(slider.value > 0)
+            {
+                slider.value -= damage;
+
+            }
+            else
+            {
+                if (!dead)
+                {
+                    dead = true;
+                    die();
+                }
+            }
+        }
+    }
+
+    public void die()
+    {
+        anim.SetBool("onDie", true);
+        StartCoroutine(Wait());
+    }
+
+    IEnumerator Wait()
+    {
+        yield return new WaitForSeconds(1);
+        anim.SetBool("onDie", false);
+        transform.position = GameObject.Find(respawn).transform.position;
+        slider.value = 100f;
+        dead = false;
     }
 
     public void OnJump(InputAction.CallbackContext ctx)
     {
-        //if (ctx.performed && onGround && timer <= 0)
         if (ctx.performed && onGround)
         {
             jump = true;
@@ -116,9 +150,26 @@ public class PlayerMovement : MonoBehaviour
         movement = ctx.ReadValue<float>();
     }
 
-    IEnumerator Wait()
+    public void OnPause(InputAction.CallbackContext ctx)
     {
-        yield return new WaitForSeconds(5);
+        if (ctx.performed)
+        {
+            Pause();
+        }
+    }
+
+    private void Pause()
+    {
+        if (paused)
+        {
+            Time.timeScale = 1;
+            paused = false;
+        }
+        else
+        {
+            Time.timeScale = 0;
+            paused = true;
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -129,10 +180,13 @@ public class PlayerMovement : MonoBehaviour
         }
         if (collision.gameObject.tag == "Death")
         {
-            anim.SetBool("onDie", true);
-            screenShaker.GenerateImpulse();
-            StartCoroutine(Wait());
-            collision.otherCollider.transform.position = GameObject.Find("Respawn").transform.position;
+            onLava = true;
+            source.GenerateImpulse();
+        }
+        if (collision.gameObject.tag == "Respawn")
+        {
+            respawn = collision.gameObject.name;
+            Destroy(collision.gameObject);
         }
     }
 
@@ -144,7 +198,7 @@ public class PlayerMovement : MonoBehaviour
         }
         if (collision.gameObject.tag == "Death")
         {
-            anim.SetBool("onDie", false);
+            onLava = false;
         }
     }
 }
