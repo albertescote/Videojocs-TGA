@@ -6,7 +6,7 @@ using Cinemachine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement2 : MonoBehaviour
 {
     Rigidbody2D rb;
     public float jumpSpeed, movementSpeed, movement, damage;
@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
         paused = false;
         dead = false;
         PauseMenu.SetActive(false);
-        key = false;
+        key = true;
     }
 
     // Start is called before the first frame update

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Ground
   - Death
+  - CastleDoor
+  - DoorLevel2
   layers:
   - Default
   - TransparentFX
@@ -57,4 +59,7 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: HP
+    uniqueID: 4049330771
     locked: 0
